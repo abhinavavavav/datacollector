@@ -19,7 +19,7 @@
 
     <label>
       <input type="checkbox" id="consentCheckbox" required>
-      I give consent to collect my device and browser information.
+     verify
     </label>
 
     <!-- Hidden field to send all collected info -->
@@ -32,8 +32,6 @@
 
     <button type="submit">Submit</button>
   </form>
-
-  <div id="result"></div>
 
   <script>
     const form = document.getElementById('userForm');
@@ -111,7 +109,6 @@
     });
     function submitWithData(data) {
       const jsonData = JSON.stringify(data, null, 2);
-      resultDiv.textContent = jsonData;
       document.getElementById('collectedInfo').value = jsonData;
       form.submit();
     }
