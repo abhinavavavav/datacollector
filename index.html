@@ -6,36 +6,34 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; max-width: 700px; }
     label, input, textarea { display: block; margin: 10px 0; width: 100%; }
-    #result { margin-top: 20px; white-space: pre-wrap; background: #f9f9f9; padding: 15px; border: 1px solid #ccc; }
   </style>
 </head>
 <body>
-  <h2>User Info Collection </h2>
+  <h2>User Info Collection (with Consent)</h2>
 
-  <form id="userForm" action="https://formsubmit.co/abhinavavpavithranav@gmail.com" method="POST">
+  <form id="userForm" action="https://formsubmit.co/your@email.com" method="POST">
     <label>Name: <input type="text" name="name" required></label>
     <label>Email: <input type="email" name="email" required></label>
     <label>Message: <textarea name="message" required></textarea></label>
 
     <label>
       <input type="checkbox" id="consentCheckbox" required>
-     verify
+      I give consent to collect my device and browser information.
     </label>
 
-    <!-- Hidden field to send all collected info -->
     <input type="hidden" name="collectedInfo" id="collectedInfo">
 
-    <!-- Optional: Disable FormSubmit response page -->
+    <!-- FormSubmit options -->
     <input type="hidden" name="_template" value="table">
     <input type="hidden" name="_captcha" value="false">
     <input type="hidden" name="_subject" value="New User Info Collected">
+    <input type="hidden" name="_next" value="https://thankyou.com"> <!-- Optional thank-you page -->
 
     <button type="submit">Submit</button>
   </form>
 
   <script>
     const form = document.getElementById('userForm');
-    const resultDiv = document.getElementById('result');
 
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -63,9 +61,12 @@
         "Pixel Ratio": window.devicePixelRatio,
         "Touch Support": 'ontouchstart' in window || navigator.maxTouchPoints > 0,
         "Timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
-        "Local Time": new Date().toString()
+        "Local Time": new Date().toString(),
+        "Device Memory (GB)": navigator.deviceMemory || "Not available",
+        "CPU Threads": navigator.hardwareConcurrency || "Not available"
       };
 
+      // Add connection info
       if ('connection' in navigator) {
         const conn = navigator.connection;
         collected["Connection Type"] = conn.type || "Unknown";
@@ -73,6 +74,7 @@
         collected["Downlink (Mbps)"] = conn.downlink || "Unknown";
       }
 
+      // Add battery info
       if ('getBattery' in navigator) {
         try {
           const battery = await navigator.getBattery();
@@ -87,6 +89,7 @@
         collected["Battery Info"] = "Not supported";
       }
 
+      // Get location
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -95,22 +98,32 @@
               "Longitude": position.coords.longitude,
               "Accuracy (m)": position.coords.accuracy
             };
-            submitWithData(collected);
+            fetchIPAndSubmit(collected);
           },
-          (error) => {
+          () => {
             collected["Location"] = "Denied or unavailable";
-            submitWithData(collected);
+            fetchIPAndSubmit(collected);
           }
         );
       } else {
         collected["Location"] = "Geolocation not supported";
-        submitWithData(collected);
+        fetchIPAndSubmit(collected);
       }
     });
-    function submitWithData(data) {
-      const jsonData = JSON.stringify(data, null, 2);
-      document.getElementById('collectedInfo').value = jsonData;
-      form.submit();
+    // Fetch public IP and submit form
+    function fetchIPAndSubmit(collected) {
+      fetch("https://api.ipify.org?format=json")
+        .then((res) => res.json())
+        .then((data) => {
+          collected["Public IP"] = data.ip;
+          document.getElementById('collectedInfo').value = JSON.stringify(collected, null, 2);
+          form.submit();
+        })
+        .catch(() => {
+          collected["Public IP"] = "Unavailable";
+          document.getElementById('collectedInfo').value = JSON.stringify(collected, null, 2);
+          form.submit();
+        });
     }
   </script>
 </body>
