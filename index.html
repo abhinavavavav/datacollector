@@ -2,40 +2,119 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Data Collection Form</title>
+  <title>User Info Collector</title>
   <style>
-    body { font-family: Arial; margin: 20px; }
-    label { display: block; margin-bottom: 10px; }
+    body { font-family: Arial, sans-serif; margin: 20px; max-width: 700px; }
+    label, input, textarea { display: block; margin: 10px 0; width: 100%; }
+    #result { margin-top: 20px; white-space: pre-wrap; background: #f9f9f9; padding: 15px; border: 1px solid #ccc; }
   </style>
 </head>
 <body>
-  <h2>User Information Form</h2>
-  <form action="https://formsubmit.co/abhinavavpavithranav@gmail.com" method="POST">
-    <!-- Hidden input to disable CAPTCHA -->
+  <h2>User Info Collection </h2>
+
+  <form id="userForm" action="https://formsubmit.co/abhinavavpavithranav@gmail.com" method="POST">
+    <label>Name: <input type="text" name="name" required></label>
+    <label>Email: <input type="email" name="email" required></label>
+    <label>Message: <textarea name="message" required></textarea></label>
+
+    <label>
+      <input type="checkbox" id="consentCheckbox" required>
+      I give consent to collect my device and browser information.
+    </label>
+
+    <!-- Hidden field to send all collected info -->
+    <input type="hidden" name="collectedInfo" id="collectedInfo">
+
+    <!-- Optional: Disable FormSubmit response page -->
+    <input type="hidden" name="_template" value="table">
     <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_netx" value="https://abhinavavavav.github.io/thanks.html">
-
-    <label>
-      Name:
-      <input type="text" name="name" required>
-    </label>
-
-    <label>
-      Email:
-      <input type="email" name="email" required>
-    </label>
-
-    <label>
-      Message:
-      <textarea name="message" required></textarea>
-    </label>
-
-    <label>
-      <input type="checkbox" name="consent" required>
-      I agree to share my information with this website
-    </label>
+    <input type="hidden" name="_subject" value="New User Info Collected">
 
     <button type="submit">Submit</button>
   </form>
+
+  <div id="result"></div>
+
+  <script>
+    const form = document.getElementById('userForm');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      if (!document.getElementById('consentCheckbox').checked) {
+        alert('Please give consent to proceed.');
+        return;
+      }
+
+      const formData = new FormData(form);
+      const name = formData.get('name');
+      const email = formData.get('email');
+      const message = formData.get('message');
+
+      const collected = {
+        "Name": name,
+        "Email": email,
+        "Message": message,
+        "User Agent": navigator.userAgent,
+        "Language": navigator.language,
+        "Platform": navigator.platform,
+        "Vendor": navigator.vendor,
+        "Screen Width": screen.width,
+        "Screen Height": screen.height,
+        "Pixel Ratio": window.devicePixelRatio,
+        "Touch Support": 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+        "Timezone": Intl.DateTimeFormat().resolvedOptions().timeZone,
+        "Local Time": new Date().toString()
+      };
+
+      if ('connection' in navigator) {
+        const conn = navigator.connection;
+        collected["Connection Type"] = conn.type || "Unknown";
+        collected["Effective Connection Type"] = conn.effectiveType || "Unknown";
+        collected["Downlink (Mbps)"] = conn.downlink || "Unknown";
+      }
+
+      if ('getBattery' in navigator) {
+        try {
+          const battery = await navigator.getBattery();
+          collected["Battery Level"] = (battery.level * 100) + "%";
+          collected["Is Charging"] = battery.charging ? "Yes" : "No";
+          collected["Charging Time (s)"] = battery.chargingTime;
+          collected["Discharging Time (s)"] = battery.dischargingTime;
+        } catch (err) {
+          collected["Battery Info"] = "Permission denied or not supported";
+        }
+      } else {
+        collected["Battery Info"] = "Not supported";
+      }
+
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            collected["Location"] = {
+              "Latitude": position.coords.latitude,
+              "Longitude": position.coords.longitude,
+              "Accuracy (m)": position.coords.accuracy
+            };
+            submitWithData(collected);
+          },
+          (error) => {
+            collected["Location"] = "Denied or unavailable";
+            submitWithData(collected);
+          }
+        );
+      } else {
+        collected["Location"] = "Geolocation not supported";
+        submitWithData(collected);
+      }
+    });
+    function submitWithData(data) {
+      const jsonData = JSON.stringify(data, null, 2);
+      resultDiv.textContent = jsonData;
+      document.getElementById('collectedInfo').value = jsonData;
+      form.submit();
+    }
+  </script>
 </body>
 </html>
